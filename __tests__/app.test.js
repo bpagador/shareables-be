@@ -66,5 +66,57 @@ describe('app routes', () => {
             });
     });
 
+    it('can find affirmations by id', async() => {
+        const oneAffirmation = await Shareable.create({
+            user_name: 'Donald',
+            affirmation: 'you are the second best',
+        });
 
+        return request(app)
+            .get(`/shareables/${oneAffirmation._id}`)
+            .then(res => {
+                expect(res.body).toEqual(
+                    {
+                        _id: oneAffirmation.id,
+                        user_name: 'Donald',
+                        affirmation: 'you are the second best',
+                        likes: 0,
+                        __v: 0
+                    }
+                );
+            });
+    });
+
+    it('can update an affirmation after finding it by id', async() => {
+        const oneAffirmation = await Shareable.create({
+            user_name: 'Donald',
+            affirmation: 'you are the second best',
+        });
+
+        const newAffirmation = {
+            user_name: 'Yonald',
+            affirmation: 'you are the third best',
+        };
+
+        return request(app)
+            .patch(`/shareables/${oneAffirmation._id}`)
+            .send({ user_name: newAffirmation.user_name, affirmation: newAffirmation.affirmation })
+            .then(res => {
+                expect(res.body).toEqual(
+                    {
+                        _id: oneAffirmation.id,
+                        user_name: 'Yonald',
+                        affirmation: 'you are the third best',
+                        likes: 0,
+                        __v: 0
+                    }
+                );
+            });
+    });
+
+    // it('can delete an affirmation by its id', async() => {
+    //     const newAffirmation = await Shareable.create
+    // })
 });
+
+
