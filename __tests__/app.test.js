@@ -22,7 +22,8 @@ describe('app routes', () => {
     });
 
     afterAll(() => {
-        return mongoose.connection.close();
+        return mongoose.connection.close()
+            .then(() => mongo.stop());
     });
 
     it('creates a new shareable image url', () => {
@@ -114,9 +115,27 @@ describe('app routes', () => {
             });
     });
 
-    // it('can delete an affirmation by its id', async() => {
-    //     const newAffirmation = await Shareable.create
-    // })
+    it('can delete an affirmation by its id', async() => {
+        const newAffirmation = await Shareable.create({
+            user_name: 'Tonald',
+            affirmation: 'you are the fourth best'
+        });
+
+        return request(app)
+            .delete(`/shareables/${newAffirmation._id}`)
+            .then(res => {
+                expect(res.body).toEqual(
+                    {
+                        _id: newAffirmation.id,
+                        user_name: 'Tonald',
+                        affirmation: 'you are the fourth best',
+                        likes: 0,
+                        __v: 0
+
+                    }
+                );
+            });
+    });
 });
 
 
